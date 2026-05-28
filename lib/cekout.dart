@@ -1,6 +1,7 @@
 import 'package:delivery/berhasil.dart';
 import 'package:delivery/inputguest.dart';
 import 'package:delivery/keranjangprovider.dart';
+import 'package:delivery/login.dart';
 import 'package:delivery/wa.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -162,26 +163,50 @@ class _CheckoutPageState extends State<CheckoutPage>{
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const InputGuestPage(),
-                  ),
-                );
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const InputGuestPage(),
+                      ),
+                    );
 
-                if (result != null) {
-                  setState(() {
-                    alamat = result;
-                  });
-                }
-              }, 
-              child: const Text("Tambah Alamat"),
-            ),
-          )
+                    if (result != null) {
+                      setState(() {
+                        alamat = result;
+                      });
+                    }
+                  }, 
+                  child: const Text("Tambah Alamat"),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (_) => const LoginPage(),
+                      ),
+                    );
+                    if (result == true) {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      await getAlamat();
+                    }
+                  }, 
+                  child: const Text("Login"),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     ),

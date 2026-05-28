@@ -2,6 +2,7 @@ import 'package:delivery/alamat.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
+import 'pesanan/pesanan.dart';
 
 class ProfilPage extends StatefulWidget {
   const ProfilPage({super.key});
@@ -87,14 +88,47 @@ class _ProfilPageState extends State<ProfilPage> {
     );
   }
 
-  Widget _buildStatusPesanan(
+  Widget _buildPesanan() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildStatusItem(
+          Icons.inventory_2_outlined,
+          "Disiapkan",
+          0,
+        ),
+        _buildStatusItem(
+          Icons.delivery_dining,
+          "Diantar",
+          1,
+        ),
+        _buildStatusItem(
+          Icons.check_circle,
+          "Sampai",
+          2,
+        )
+      ],
+    );
+  }
+
+  Widget _buildStatusItem(
     IconData icon,
     String title,
-    bool adaNotif,
+    int tabIndex,
   ) {
-   return Column(
-    children: [
-      Stack(
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PesananPage(
+              initialIndex: tabIndex,
+            ),
+          )
+        );
+      },
+      child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
@@ -102,49 +136,19 @@ class _ProfilPageState extends State<ProfilPage> {
               color: Colors.blue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, size: 32, color: Colors.blue),
-          ),       
-          if (adaNotif)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Container(
-              width: 12,
-              height: 12,
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
+            child: Icon(
+              icon,
+              size: 32,
+              color: Colors.blue,
             ),
           ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 12),
+          )
         ],
       ),
-      const SizedBox(height: 4),
-      Text(title, style: const TextStyle(fontSize: 12)),
-    ],
-   ); 
-  }
-
-  Widget _buildPesanan() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        _buildStatusPesanan(
-          Icons.inventory_2_outlined,
-          "Disiapkan",
-          true,
-        ),
-        _buildStatusPesanan(
-          Icons.delivery_dining,
-          "Diantar",
-          true,
-        ),
-        _buildStatusPesanan(
-          Icons.check_circle,
-          "Sampai",
-          false,
-        ),
-      ],
     );
   }
 
@@ -244,7 +248,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: 
-                    _buildmenuItem(Icons.shopping_bag_outlined, "Riwayat", (){
+                    _buildMenuItem(Icons.shopping_bag_outlined, "Riwayat", (){
 
                     }),
                 ),
@@ -255,7 +259,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child:
-                  _buildmenuItem(Icons.location_on, "Alamat", (){
+                  _buildMenuItem(Icons.location_on, "Alamat", (){
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -271,7 +275,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child:
-                  _buildmenuItem(Icons.shopping_bag_outlined, "Nanti", (){
+                  _buildMenuItem(Icons.shopping_bag_outlined, "Nanti", (){
 
                   }),
                 ),
@@ -289,7 +293,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: 
-                    _buildmenuItem(Icons.shopping_bag_outlined, "Nanti", (){
+                    _buildMenuItem(Icons.shopping_bag_outlined, "Nanti", (){
 
                     }),
                 ),
@@ -300,7 +304,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child:
-                  _buildmenuItem(Icons.shopping_bag_outlined, "nanti", (){
+                  _buildMenuItem(Icons.shopping_bag_outlined, "nanti", (){
 
                   }),
                 ),
@@ -311,7 +315,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child:
-                  _buildmenuItem(Icons.shopping_bag_outlined, "Nanti", (){
+                  _buildMenuItem(Icons.shopping_bag_outlined, "Nanti", (){
 
                   }),
                 ),
@@ -323,7 +327,7 @@ class _ProfilPageState extends State<ProfilPage> {
     );
   }
 
-  Widget _buildmenuItem(IconData icon, String title, VoidCallback onTap, {bool isLogout = false}) {
+  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, {bool isLogout = false}) {
     return ListTile(
       leading: Icon(icon, color: isLogout ? Colors.red : Colors.blue, size: 18),
       title: Text(
