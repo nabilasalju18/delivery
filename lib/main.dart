@@ -1,6 +1,7 @@
-import 'package:delivery/home.dart';
-import 'package:delivery/keranjangprovider.dart';
-import 'package:delivery/profil.dart';
+import 'package:delivery/home/home.dart';
+import 'package:delivery/home/keranjang/keranjangprovider.dart';
+import 'package:delivery/profil/favorit/favoritprovider.dart';
+import 'package:delivery/profil/profil.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
@@ -16,10 +17,17 @@ void main() async {
   );
 
   runApp(
-    ChangeNotifierProvider(
-      create:(context) => KeranjangProvider(),
-      child: MyApp(),
-    ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create:(context) => KeranjangProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FavoritProvider(),
+        )
+      ],
+      child: const MyApp(),
+    )
   );
 }
 

@@ -1,7 +1,8 @@
-import 'package:delivery/keranjangprovider.dart';
+import 'package:delivery/home/keranjang/keranjangprovider.dart';
+import 'package:delivery/profil/favorit/favoritprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'keranjang.dart';
+import 'keranjang/keranjang.dart';
 
 class DetailProdukPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -71,6 +72,22 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         appBar: AppBar(
           title: const Text("Detail Produk"),
           actions: [
+            Consumer<FavoritProvider>(
+              builder: (context, favoritProvider, child) {
+                final isLiked = favoritProvider.isFavorit(item);
+                return IconButton(
+                  onPressed: () {
+                    favoritProvider.toggleFavorit(item);
+                  }, 
+                  icon: Icon(
+                    isLiked
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                    color: Colors.red,
+                  )
+                );
+              },
+            ),
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: Consumer<KeranjangProvider>(

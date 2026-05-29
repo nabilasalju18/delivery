@@ -1,9 +1,10 @@
-import 'package:delivery/keranjang.dart';
+import 'package:delivery/home/keranjang/keranjang.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'detail_produk.dart';
-import 'keranjangprovider.dart';
+import 'keranjang/keranjangprovider.dart';
 import 'package:provider/provider.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,124 +46,13 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildAlamat(),
-            const SizedBox(height: 20),
             _buildSearchBar(),
             const SizedBox(height: 20),
+            _buildHighlight(),
+            const SizedBox(height: 20),
             _buildProduct(),
-            // R03 = hr, R04 = admin, R05 = kepala toko,
           ],
         ),
-      ),
-    );
-  }
-  
-  Widget _buildAlamat() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.location_on,
-              color: Colors.blue.shade700,
-              size: 22,
-            ),
-          ),
-
-          const SizedBox(width: 12),
-
-          // TEXT
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Tsamaniya terdekat",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-
-                const SizedBox(height: 2),
-
-                const Text(
-                  "Tsamaniya Kertosono",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // KERANJANG
-          Consumer<KeranjangProvider>(
-            builder: (context, keranjangProvider, child) {
-
-              int jumlahBarang = keranjangProvider.item.fold(
-                0,
-                (total, item) => total + (item['jumlah'] as int),
-              );
-
-              return Badge(
-                isLabelVisible: jumlahBarang > 0,
-                label: Text(
-                  '$jumlahBarang',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                  ),
-                ),
-                backgroundColor: Colors.red,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const KeranjangPage(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.shopping_cart_outlined,
-                      color: Colors.blue,
-                      size: 22,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
       ),
     );
   }
@@ -184,7 +74,132 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+        const SizedBox(width: 4),
+        Consumer<KeranjangProvider>(
+          builder: (context, keranjangProvider, child) {
+
+            int jumlahBarang = keranjangProvider.item.fold(
+              0,
+              (total, item) => total + (item['jumlah'] as int),
+            );
+
+            return Badge(
+              isLabelVisible: jumlahBarang > 0,
+              label: Text(
+                '$jumlahBarang',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                ),
+              ),
+              backgroundColor: Colors.red,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const KeranjangPage(),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.shopping_cart_outlined,
+                    color: Colors.blue,
+                    size: 22,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ],
+    );
+  }
+  
+  Widget _buildHighlight() {
+    return CarouselSlider.builder(
+      itemCount: products.length,
+      options: CarouselOptions(
+        height: 180,
+        autoPlay: true,
+        enlargeCenterPage: true,
+        viewportFraction: 0.9,
+      ),
+      itemBuilder: (context, index, realIndex) {
+        final product = products[index];
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DetailProdukPage(product: product),
+              )
+            );
+          },
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    product['gambar'] ?? '',
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white.withValues(alpha: 0.6),
+                          Colors.transparent,
+                        ],
+                        begin: AlignmentGeometry.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 16,
+                    bottom: 16,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product['nama'] ?? '',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "Rp ${product['harga']}",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        );
+      }
     );
   }
   
@@ -377,6 +392,5 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
-
  
 }

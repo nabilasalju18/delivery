@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:delivery/pesanan/diantar.dart';
-import 'package:delivery/pesanan/disiapkan.dart';
-import 'package:delivery/pesanan/sampai.dart';
+import 'package:delivery/profil/pesanan/diantar.dart';
+import 'package:delivery/profil/pesanan/disiapkan.dart';
+import 'package:delivery/profil/pesanan/sampai.dart';
 
 class PesananPage extends StatefulWidget {
-  final int initialIndex;
-  const PesananPage({super.key, required this.initialIndex});
+  const PesananPage({super.key});
 
   @override
   State<PesananPage> createState() => _PesananPageState();
@@ -16,8 +15,7 @@ class _PesananPageState extends State<PesananPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
-      initialIndex: widget.initialIndex, 
+      length: 3, 
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Pesanan kamu"),

@@ -1,8 +1,8 @@
-import 'package:delivery/berhasil.dart';
-import 'package:delivery/inputguest.dart';
-import 'package:delivery/keranjangprovider.dart';
+import 'package:delivery/co/berhasil.dart';
+import 'package:delivery/co/inputguest.dart';
+import 'package:delivery/home/keranjang/keranjangprovider.dart';
 import 'package:delivery/login.dart';
-import 'package:delivery/wa.dart';
+import 'package:delivery/co/wa.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -229,6 +229,23 @@ class _CheckoutPageState extends State<CheckoutPage>{
         
         return Card(
           child: ListTile(
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                item['gambar'] ?? 'https://via.placeholder.com/70',
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.network(
+                    'https://via.placeholder.com/70',
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),               
+            ),
             title: Text(
               item['nama'] ?? 'Produk', 
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
@@ -393,7 +410,7 @@ class _CheckoutPageState extends State<CheckoutPage>{
                           'kode_user': kodeUser,
                           'id_alamat': alamat!['id'],
                           'total': grandTotal,
-                          'status': 'processing',
+                          'status': 'disiapkan',
                         })
                         .select()
                         .single();
