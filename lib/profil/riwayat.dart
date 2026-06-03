@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
 
 class RiwayatPage extends StatefulWidget {
   const RiwayatPage({super.key});
@@ -10,6 +11,14 @@ class RiwayatPage extends StatefulWidget {
 
 class _RiwayatPageState extends State<RiwayatPage> {
   Future<String?>? _kodeUserFuture;
+
+  String formatRupiah(num harga) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(harga);
+  }
 
   @override
   void initState() {
@@ -118,7 +127,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
                                 ],
                               ),
                               Text(
-                                "Rp $totalHarga",
+                                formatRupiah(totalHarga),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blue,
@@ -172,6 +181,14 @@ class _BuildDaftarBarang extends StatelessWidget {
   final int idOrder;
   const _BuildDaftarBarang({required this.idOrder});
 
+  String formatRupiah(num harga) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(harga);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -220,7 +237,6 @@ class _BuildDaftarBarang extends StatelessWidget {
 
             final int qty = item['qty'] ?? 0;
             final int harga = item['harga'] ?? 0;
-            
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
@@ -251,7 +267,7 @@ class _BuildDaftarBarang extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Rp ${harga * qty}",
+                    "${harga * qty}",
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],

@@ -3,6 +3,7 @@ import 'package:delivery/profil/favorit/favoritprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'keranjang/keranjang.dart';
+import 'package:intl/intl.dart';
 
 class DetailProdukPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -17,6 +18,13 @@ class DetailProdukPage extends StatefulWidget {
 }
 
 class _DetailProdukPageState extends State<DetailProdukPage> {
+  String formatRupiah(num harga) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(harga);
+  }
 
   void _showZoomableImage(
     BuildContext context,
@@ -186,7 +194,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     const SizedBox(height: 8),
 
                     Text(
-                      "Rp. ${item['harga'] ?? 0}",
+                      formatRupiah(item['harga'] ?? 0),
 
                       style: const TextStyle(
                         fontSize: 20,
@@ -249,6 +257,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                       'harga': item['harga'] ?? 0,
                       'gambar': item['gambar'] ?? '',
                       'jumlah': 1,
+                      'terpilih': false,
                     };
 
                     Provider.of<KeranjangProvider>(context, listen: false)
@@ -304,6 +313,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                       'harga': item['harga'],
                       'gambar': item['gambar'],
                       'jumlah': 1,
+                      'terpilih': true,
                     });
                     Navigator.push(
                       context,

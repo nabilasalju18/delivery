@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
 
 class DiantarPage extends StatefulWidget {
   const DiantarPage({super.key});
@@ -11,6 +12,14 @@ class DiantarPage extends StatefulWidget {
 class _DiantarPageState extends State<DiantarPage> {
   Future<String?>? _kodeUserFuture;
 
+  String formatRupiah(num harga) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(harga);
+  }
+  
   @override
   void initState() {
     super.initState();
@@ -115,7 +124,7 @@ class _DiantarPageState extends State<DiantarPage> {
                                 ],
                               ),
                               Text(
-                                "Rp $totalHarga",
+                                formatRupiah(totalHarga),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blue,
@@ -168,6 +177,14 @@ class _DiantarPageState extends State<DiantarPage> {
 class _BuildDaftarBarang extends StatelessWidget {
   final int idOrder;
   const _BuildDaftarBarang({required this.idOrder});
+
+  String formatRupiah(num harga) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(harga);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +265,7 @@ class _BuildDaftarBarang extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Rp ${harga * qty}",
+                    formatRupiah(harga * qty),
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],

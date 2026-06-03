@@ -185,7 +185,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: 
-                    _buildMenuItem(  Icons.shopping_bag_outlined, "Pesanan saya", (){
+                    _buildMenuItem(Icons.shopping_bag_outlined, "Pesanan saya", (){
                       Navigator.push(
                         context, 
                         MaterialPageRoute(

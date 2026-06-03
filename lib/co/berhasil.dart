@@ -1,5 +1,6 @@
 import 'package:delivery/main.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BerhasilPage extends StatefulWidget{
   final int totalPembayaran;
@@ -16,6 +17,13 @@ class BerhasilPage extends StatefulWidget{
 }
 
 class _BerhasilPageState extends State<BerhasilPage> {
+  String formatRupiah(num harga) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(harga);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +77,7 @@ class _BerhasilPageState extends State<BerhasilPage> {
                                 Expanded(
                                   child: Text("${item['nama']} (x${item['jumlah']})"),
                                 ),
-                                Text("Rp ${item['harga'] * item['jumlah']}"),
+                                Text(formatRupiah((item['harga'] ?? 0) * (item['jumlah'] ?? 0))),
                               ],
                             ),
                           );
@@ -89,7 +97,7 @@ class _BerhasilPageState extends State<BerhasilPage> {
                         children: [
                           const Text("Total Bayar"),
                           Text(
-                            "Rp ${widget.totalPembayaran}",
+                            formatRupiah(widget.totalPembayaran),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.blue,

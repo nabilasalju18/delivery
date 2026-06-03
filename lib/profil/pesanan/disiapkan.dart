@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
+
+String formatRupiah(num harga) {
+  return NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  ).format(harga);
+}
 
 class DisiapkanPage extends StatefulWidget {
   const DisiapkanPage({super.key});
@@ -115,7 +124,7 @@ class _DisiapkanPageState extends State<DisiapkanPage> {
                                 ],
                               ),
                               Text(
-                                "Rp $totalHarga",
+                                formatRupiah(totalHarga),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blue,
@@ -169,6 +178,14 @@ class _BuildDaftarBarang extends StatelessWidget {
   final int idOrder;
   const _BuildDaftarBarang({required this.idOrder});
 
+  String formatRupiah(num harga) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(harga);
+  }
+  
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -248,7 +265,7 @@ class _BuildDaftarBarang extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Rp ${harga * qty}",
+                    formatRupiah(harga * qty),
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],

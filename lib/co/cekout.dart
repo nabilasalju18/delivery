@@ -6,6 +6,7 @@ import 'package:delivery/co/wa.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -19,6 +20,13 @@ class _CheckoutPageState extends State<CheckoutPage>{
   Map<String, dynamic>? alamat;
   
   bool isLoading = true;
+  String formatRupiah(num harga) {
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(harga);
+  }
 
   @override
   void initState() {
@@ -223,9 +231,6 @@ class _CheckoutPageState extends State<CheckoutPage>{
       itemCount: keranjang.length,
       itemBuilder: (context, index) {
         final item = keranjang[index];
-
-        final int harga = item['harga'] as int? ?? 0;
-        final int jumlah = item['jumlah'] as int? ?? 0;
         
         return Card(
           child: ListTile(
@@ -253,7 +258,7 @@ class _CheckoutPageState extends State<CheckoutPage>{
               "Jumlah: ${item['jumlah'] as int}",
             ),
             trailing: Text(
-              "Rp ${harga * jumlah}",
+              formatRupiah((item['harga'] ?? 0) * (item['jumlah'] ?? 0)),
               style: TextStyle(fontSize: 14),
             ),
           ),   
@@ -288,14 +293,14 @@ class _CheckoutPageState extends State<CheckoutPage>{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text("Subtotal"),
-                Text("Rp $subtotal"),
+                Text(formatRupiah(subtotal)),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text("Ongkir"),
-                Text("Rp $ongkir"),
+                Text(formatRupiah(ongkir)),
               ],
             ),
           ],
@@ -346,7 +351,7 @@ class _CheckoutPageState extends State<CheckoutPage>{
                   ),
                 ),
                 Text(
-                  "Rp $grandTotal",
+                  formatRupiah(grandTotal),
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -438,7 +443,7 @@ class _CheckoutPageState extends State<CheckoutPage>{
   RINGKASAN PESANAN
   ID Order   : #$orderId
   Tipe User  : $infoPembeli
-  Total      : Rp $grandTotal
+  Total      : ${formatRupiah(grandTotal)}
   =========================
 
   DAFTAR BARANG:

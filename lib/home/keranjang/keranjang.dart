@@ -2,6 +2,16 @@ import 'package:delivery/co/cekout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'keranjangprovider.dart';
+import 'package:intl/intl.dart';
+
+
+String formatRupiah(num harga) {
+  return NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  ).format(harga);
+}
 
 class KeranjangPage extends StatelessWidget {
   const KeranjangPage({super.key});
@@ -10,14 +20,28 @@ class KeranjangPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final keranjangProvider = Provider.of<KeranjangProvider>(context);
     final keranjang = keranjangProvider.item;
+    // final cabangProvider = context.watch<CabangProvider>();
     return Scaffold(
       appBar: AppBar(title: const Text("Keranjang")),
       backgroundColor: const Color.fromARGB(255, 149, 220, 246),
       body: Column(
         children: [
+          // Card(
+          //   child: ListTile(
+          //     leading: Icon(Icons.store),
+          //     title: Text(
+          //       cabangProvider.selectCabangNama ??
+          //       "Cabang blm dipilih",
+          //     ),
+          //     subtitle: Text(
+          //       cabangProvider.selectedAlamat ??
+          //       "-",
+          //     ),
+          //   ),
+          // ),
           Expanded(
             child: keranjang.isEmpty
-                ? const Center(
+                ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -41,9 +65,9 @@ class KeranjangPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final item = keranjang[index];
                       return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         child: Padding(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(10),
                           // Row utama untuk membagi Gambar, Detail text dan tombol
                           child: Row(
                             children: [
@@ -64,7 +88,7 @@ class KeranjangPage extends StatelessWidget {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 8),
                               // Info Produk
                               Expanded(
                                 child: Column(
@@ -78,7 +102,7 @@ class KeranjangPage extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    Text('Rp ${item['harga']}'),
+                                    Text(formatRupiah(item['harga'] ?? 0)),
                                   ],
                                 ),
                               ),
@@ -136,7 +160,7 @@ class KeranjangPage extends StatelessWidget {
                       style: TextStyle(color: Colors.grey, fontSize: 14),
                     ),
                     Text(
-                      "Rp ${keranjangProvider.totalHarga}",
+                      formatRupiah(keranjangProvider.totalHarga),
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
