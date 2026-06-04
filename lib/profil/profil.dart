@@ -1,4 +1,5 @@
 import 'package:delivery/profil/alamat/alamat.dart';
+import 'package:delivery/profil/favorit/favorit.dart';
 import 'package:delivery/profil/riwayat.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -234,7 +235,12 @@ class _ProfilPageState extends State<ProfilPage> {
                 ),
                 child: 
                     _buildMenuItem(Icons.favorite, "Favorite", (){
-
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (_) => FavoritPage()
+                        ),
+                      );
                     }),
                 ),
                 const SizedBox(height: 14),

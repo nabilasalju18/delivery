@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class InputGuestPage extends StatefulWidget {
@@ -37,6 +38,18 @@ class _InputGuestPageState extends State<InputGuestPage> {
       
       String kodeUser = "G${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}";
 
+      double? latitudeHasil;
+      double? longitudeHasil;
+
+      try {
+        List<Location> lokasi = await locationFromAddress(alamatController.text);
+        if(lokasi.isNotEmpty) {
+          latitudeHasil = lokasi.first.latitude;
+          longitudeHasil = lokasi.first.longitude;
+        }
+      } catch (e) {
+        debugPrint("Geocoding log: Gagal mendeteksi koordinat spesifik untuk alamat ini. $e");
+      }
       await supabase
         .from('users')
         .insert({
@@ -51,6 +64,8 @@ class _InputGuestPageState extends State<InputGuestPage> {
           'nama_penerima': namaController.text,
           'no_telpon': telponController.text,
           'alamat_lengkap': alamatController.text,
+          'latitude': latitudeHasil,
+          'longitude': longitudeHasil
         })
         .select()
         .single();

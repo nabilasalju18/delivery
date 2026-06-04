@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 
 class TambahAlamatPage extends StatefulWidget {
   const TambahAlamatPage({super.key});
@@ -46,14 +47,31 @@ class _TambahAlamatPageState extends State<TambahAlamatPage> {
 
       final String kodeUserAktif = dataUser['kode_user'];
 
-      await supabase.from('alamat').insert({
-        'kode_user': kodeUserAktif,
-        'label_alamat': _labelController.text.trim(),
-        'nama_penerima': _namaController.text.trim(),
-        'no_telpon': _teleponController.text.trim(),
-        'alamat_lengkap': _alamatController.text.trim(),
-        'catatan': _catatanController.text.trim(),
-      });
+      double? latitudeHasil;
+      double? longitudeHasil;
+
+      try {
+        List<Location> lokasi = await locationFromAddress(_alamatController.text.trim());
+        if (lokasi.isNotEmpty) {
+          latitudeHasil = lokasi.first.latitude;
+          longitudeHasil = lokasi.first.longitude;
+        }
+      } catch (e) {
+        debugPrint("Geocoding log: Gagal mendeteksi koordinat spesifik untuk alamt ini. $e");
+      }
+
+      await supabase
+        .from('alamat')
+        .insert({
+          'kode_user': kodeUserAktif,
+          'label_alamat': _labelController.text.trim(),
+          'nama_penerima': _namaController.text.trim(),
+          'no_telpon': _teleponController.text.trim(),
+          'alamat_lengkap': _alamatController.text.trim(),
+          'catatan': _catatanController.text.trim(),
+          'latitude': latitudeHasil,
+          'longitude': longitudeHasil,
+        });
 
       setState(() => isSimpanLoading = false);
       if (!mounted) return;

@@ -3,6 +3,7 @@ import 'package:delivery/co/inputguest.dart';
 import 'package:delivery/home/keranjang/keranjangprovider.dart';
 import 'package:delivery/login.dart';
 import 'package:delivery/co/wa.dart';
+import 'package:delivery/profil/alamat/alamat.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -151,7 +152,7 @@ class _CheckoutPageState extends State<CheckoutPage>{
         trailing: IconButton(
           icon: const Icon(Icons.edit, size: 20),
           onPressed: () {
-            
+            const AlamatPage();
           },
         ),
       ),
@@ -413,7 +414,7 @@ class _CheckoutPageState extends State<CheckoutPage>{
                         .from('orders')
                         .insert({
                           'kode_user': kodeUser,
-                          'id_alamat': alamat!['id'],
+                          'titik_terima': alamat!['id'],
                           'total': grandTotal,
                           'status': 'disiapkan',
                         })
