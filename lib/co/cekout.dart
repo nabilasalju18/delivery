@@ -1,9 +1,11 @@
 import 'package:delivery/co/berhasil.dart';
 import 'package:delivery/co/inputguest.dart';
+import 'package:delivery/profil/alamat/alamat_tsamaniya.dart';
+import 'package:delivery/profil/alamat/cabangprovider.dart';
 import 'package:delivery/home/keranjang/keranjangprovider.dart';
 import 'package:delivery/login.dart';
 import 'package:delivery/co/wa.dart';
-import 'package:delivery/profil/alamat/alamat.dart';
+import 'package:delivery/profil/alamat/pilihalamat.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -99,13 +101,22 @@ class _CheckoutPageState extends State<CheckoutPage>{
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
+            "Diantar dari",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            _buildAlamatTs(),
+            const SizedBox(height: 20),
+            const Text(
               "Diantar ke",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            _buildAlamat(),
+            _buildAlamatCs(),
             const SizedBox(height: 20),
             const Text(
               "Pesanan Kamu",
@@ -132,7 +143,32 @@ class _CheckoutPageState extends State<CheckoutPage>{
     );
   }
 
-  Widget _buildAlamat() {
+  Widget _buildAlamatTs() {
+    final cabangProvider = context.watch<CabangProvider>();
+    
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: ListTile(
+        leading: const Icon(Icons.store),
+        title: Text(cabangProvider.selectedCabangNama ?? "Pilih Toko", style: TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(cabangProvider.selectedAlamat ?? "belum ada toko terpilih"),
+        trailing: IconButton(
+          onPressed: () async {
+            await Navigator.push(
+              context, 
+              MaterialPageRoute(
+                builder: (_) => const DaftarTokoPage(),
+              )
+            );
+          }, 
+          icon: const Icon(Icons.edit),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAlamatCs() {
     if(alamat == null) {
       return _buildFormAlamatGuest();
     }
@@ -151,8 +187,18 @@ class _CheckoutPageState extends State<CheckoutPage>{
         ),
         trailing: IconButton(
           icon: const Icon(Icons.edit, size: 20),
-          onPressed: () {
-            const AlamatPage();
+          onPressed: () async {
+            final hasil = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const PilihAlamatPage(),
+              ),
+            );
+            if (hasil != null) {
+              setState(() {
+                alamat = hasil;
+              });
+            }
           },
         ),
       ),

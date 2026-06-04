@@ -1,4 +1,4 @@
-import 'package:delivery/profil/alamat/alamat.dart';
+import 'package:delivery/profil/alamat/alamat_customer.dart';
 import 'package:delivery/profil/favorit/favorit.dart';
 import 'package:delivery/profil/riwayat.dart';
 import 'package:flutter/material.dart';

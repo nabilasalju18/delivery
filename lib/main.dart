@@ -1,4 +1,4 @@
-import 'package:delivery/home/cabangprovider.dart';
+import 'package:delivery/profil/alamat/cabangprovider.dart';
 import 'package:delivery/home/home.dart';
 import 'package:delivery/home/keranjang/keranjangprovider.dart';
 import 'package:delivery/profil/favorit/favoritprovider.dart';

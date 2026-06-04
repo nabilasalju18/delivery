@@ -1,4 +1,4 @@
-import 'package:delivery/home/cabangprovider.dart';
+import 'package:delivery/profil/alamat/cabangprovider.dart';
 import 'package:delivery/home/keranjang/keranjang.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -6,7 +6,7 @@ import 'detail_produk.dart';
 import 'keranjang/keranjangprovider.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'alamat_tsamaniya.dart';
+import '../profil/alamat/alamat_tsamaniya.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 
