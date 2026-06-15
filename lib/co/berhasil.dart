@@ -6,7 +6,7 @@ class BerhasilPage extends StatefulWidget{
   final int totalPembayaran;
   final List<dynamic> daftarBarang;
 
-  BerhasilPage({
+  const BerhasilPage({
     super.key,
     required this.totalPembayaran,
     required this.daftarBarang,

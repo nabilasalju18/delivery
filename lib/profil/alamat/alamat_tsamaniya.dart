@@ -1,33 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import 'cabangprovider.dart';
+import 'alamatprovider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class TsamaniyaModel {
-  final int? id;
-  final String? namaCabang;
-  final String? alamat;
-  final double? latitude;
-  final double? longitude;
-  final String? noTelpon;
-  final String? jamBuka;
-  final String? jamTutup;
-  final bool? statusAktif;
-  double? distance;
-  TsamaniyaModel({
-    this.id,
-    this.namaCabang,
-    this.alamat,
-    this.latitude,
-    this.longitude,
-    this.noTelpon,
-    this.jamBuka,
-    this.jamTutup,
-    this.statusAktif,
-      this.distance = 0.0,
-  });
-}
 class DaftarTokoPage extends StatefulWidget {
   const DaftarTokoPage({super.key});
 
@@ -51,7 +27,8 @@ class _DaftarTokoPageState extends State<DaftarTokoPage> {
         .from('lokasi_tsamaniya')
         .select();
 
-    final userPos = await getUserLocation();
+    final provider = context.read<CabangProvider>();
+    final userPos = await provider.getCurrentLocation();
 
     final List<TsamaniyaModel> list = (response as List).map((item) {
       return TsamaniyaModel(
@@ -81,16 +58,6 @@ class _DaftarTokoPageState extends State<DaftarTokoPage> {
     list.sort((a, b) => a.distance!.compareTo(b.distance!));
 
     return list;
-  }
-
-  Future<Position> getUserLocation() async {
-    bool serviceEnabled;
- 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if(!serviceEnabled) {
-      throw Exception("GPS tidak aktif");
-    }
-    return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -159,6 +126,8 @@ class _DaftarTokoPageState extends State<DaftarTokoPage> {
                       cabang.id!,
                       cabang.namaCabang!,
                       cabang.alamat!,
+                      cabang.latitude!,
+                      cabang.longitude!,
                     );
 
                     Navigator.pop(context);

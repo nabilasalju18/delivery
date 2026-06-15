@@ -1,7 +1,7 @@
 import 'package:delivery/co/berhasil.dart';
 import 'package:delivery/co/inputguest.dart';
 import 'package:delivery/profil/alamat/alamat_tsamaniya.dart';
-import 'package:delivery/profil/alamat/cabangprovider.dart';
+import 'package:delivery/profil/alamat/alamatprovider.dart';
 import 'package:delivery/home/keranjang/keranjangprovider.dart';
 import 'package:delivery/login.dart';
 import 'package:delivery/co/wa.dart';
@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:geolocator/geolocator.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -38,7 +39,7 @@ class _CheckoutPageState extends State<CheckoutPage>{
   }
 
   Future<void> getAlamat() async {
-    final userLogin = await Supabase.instance.client.auth.currentUser;
+    final userLogin = Supabase.instance.client.auth.currentUser;
     
     if (userLogin == null) {
       setState(() {
@@ -80,6 +81,30 @@ class _CheckoutPageState extends State<CheckoutPage>{
         isLoading = false;
       });
     }
+  }
+
+  int hitungOngkir() {
+    if (alamat == null) return 5000;
+
+    final cabangProvider = context.read<CabangProvider>();
+
+    if (cabangProvider.selectedLatitude == null ||
+        cabangProvider.selectedLongitude == null) {
+      return 5000;
+    }
+
+    double jarakMeter = Geolocator.distanceBetween(
+      (alamat!['latitude'] as num).toDouble(),
+      (alamat!['longitude'] as num).toDouble(),
+      cabangProvider.selectedLatitude!,
+      cabangProvider.selectedLongitude!,
+    );
+
+    double jarakKm = jarakMeter / 1000;
+
+    int ongkir = (jarakKm * 2000).round();
+
+    return ongkir < 2000 ? 2000 : ongkir;
   }
 
   @override
@@ -323,8 +348,8 @@ class _CheckoutPageState extends State<CheckoutPage>{
     for (var item in keranjang) {
       total += (item['harga'] as int) * (item['jumlah'] as int);
     }
-
-    int ongkir = 5000;
+   
+    int ongkir = hitungOngkir();
     int subtotal = total;
 
     return Card(
@@ -365,7 +390,7 @@ class _CheckoutPageState extends State<CheckoutPage>{
       total += (item['harga'] as int) * (item['jumlah'] as int);
     }
 
-    int ongkir = 5000;
+    int ongkir = hitungOngkir();
     int subtotal = total;
     int grandTotal = ongkir + subtotal;
 

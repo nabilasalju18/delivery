@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../login.dart';
 import 'pesanan/pesanan.dart';
+import 'package:delivery/profil/alamat/alamatprovider.dart';
+import 'package:provider/provider.dart';
 
 class ProfilPage extends StatefulWidget {
   const ProfilPage({super.key});
@@ -67,6 +69,7 @@ class _ProfilPageState extends State<ProfilPage> {
               const SizedBox(height: 20),
               IconButton(
                 onPressed: () async {
+                  await context.read<CabangProvider>().clearCabang();
                   await Supabase.instance.client.auth.signOut();
                   if (mounted) {
                     setState(() {

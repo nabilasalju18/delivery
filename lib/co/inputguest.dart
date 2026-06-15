@@ -1,6 +1,10 @@
+import 'package:delivery/profil/alamat/alamatprovider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
 
 class InputGuestPage extends StatefulWidget {
   const InputGuestPage({super.key});
@@ -17,7 +21,13 @@ class _InputGuestPageState extends State<InputGuestPage> {
 
   bool isLoading = false;
 
+  GoogleMapController? _mapController;
+
+  LatLng _selectedLocation =
+    const LatLng(-7.599533246164611, 112.10172199328949);
+
   Future<void> simpanGuest() async {
+  
     if (namaController.text.isEmpty ||
         telponController.text.isEmpty ||
         alamatController.text.isEmpty) {
@@ -38,18 +48,10 @@ class _InputGuestPageState extends State<InputGuestPage> {
       
       String kodeUser = "G${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}";
 
-      double? latitudeHasil;
-      double? longitudeHasil;
+      double? latitudeHasil = _selectedLocation.latitude;
+      double? longitudeHasil = _selectedLocation.longitude;
 
-      try {
-        List<Location> lokasi = await locationFromAddress(alamatController.text);
-        if(lokasi.isNotEmpty) {
-          latitudeHasil = lokasi.first.latitude;
-          longitudeHasil = lokasi.first.longitude;
-        }
-      } catch (e) {
-        debugPrint("Geocoding log: Gagal mendeteksi koordinat spesifik untuk alamat ini. $e");
-      }
+      
       await supabase
         .from('users')
         .insert({
@@ -85,11 +87,39 @@ class _InputGuestPageState extends State<InputGuestPage> {
     });
   }
 
+  Future<void> _getCurrentLocation() async {
+    try {
+      final position = await context
+        .read<CabangProvider>()
+        .getCurrentLocation();
+
+      final lokasiBaru = LatLng(
+        position.latitude, 
+        position.longitude,
+      );
+
+      _selectedLocation = lokasiBaru;
+
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          lokasiBaru,
+          14,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Masukkan Datamu"),
+        title: const Text("Tambah Alamat"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -131,6 +161,51 @@ class _InputGuestPageState extends State<InputGuestPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
+            ),
+            const SizedBox(height: 25),
+            Container(
+              height: 300,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.grey,
+                )
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    gestureRecognizers: {
+                      Factory<OneSequenceGestureRecognizer>(
+                        () => EagerGestureRecognizer(),
+                      ),
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: _selectedLocation,
+                      zoom: 15,
+                    ),
+                    onMapCreated: (controller) {
+                      _mapController = controller;
+                    },
+                    onCameraMove: (position) {
+                      _selectedLocation = position.target;
+                    },
+                  ),
+                  const Center(
+                    child: Icon(
+                      Icons.location_pin,
+                      size: 45,
+                      color: Colors.red,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(height: 25),
+            ElevatedButton.icon(
+              onPressed: _getCurrentLocation, 
+              icon: const Icon(Icons.my_location),
+              label: const Text("Gunakan lokasi saat ini"),
             ),
             const SizedBox(height: 25),
             SizedBox(

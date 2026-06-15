@@ -31,11 +31,11 @@ class _RegisterPageState extends State<RegisterPage> {
         .from('users')
         .insert({
           'user_id': user.id,
-          'email': emailController.text.trim(),
-          'password': passwordController.text.trim(),
-          'nama_user': emailController.text.split('@')[0],
+          'email': user.email,
+          'nama_user': user.email?.split('@')[0],
         });
-      }
+        debugPrint("INSERT USERS BERHASIL");
+      } 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

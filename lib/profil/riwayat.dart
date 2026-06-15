@@ -61,7 +61,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
             ),
           );
         }
-         final Stream<List<Map<String, dynamic>>> _ordersStream =
+         final Stream<List<Map<String, dynamic>>> ordersStream =
           Supabase.instance.client
               .from('orders')
               .stream(primaryKey: ['id'])
@@ -75,7 +75,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
             title: const Text("Riwayat Pesanan"),
           ),
           body: StreamBuilder<List<Map<String, dynamic>>>(
-            stream: _ordersStream,
+            stream: ordersStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

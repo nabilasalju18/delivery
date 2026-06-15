@@ -1,7 +1,8 @@
-import 'package:delivery/profil/alamat/cabangprovider.dart';
+import 'package:delivery/profil/alamat/alamatprovider.dart';
 import 'package:delivery/home/home.dart';
 import 'package:delivery/home/keranjang/keranjangprovider.dart';
 import 'package:delivery/profil/favorit/favoritprovider.dart';
+import 'package:delivery/home/keranjang/keranjang.dart';
 import 'package:delivery/profil/profil.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -98,7 +99,7 @@ class _MainScreenState extends State<MainScreen> {
               errorBuilder: (context, error, stackTrace) =>
                   const Icon(Icons.business, color: Colors.blue),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 4),
             const Text(
               'Tsamaniya Delivery',
               style: TextStyle(
@@ -106,6 +107,51 @@ class _MainScreenState extends State<MainScreen> {
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
+            ),
+            const SizedBox(width: 90),
+            Consumer<KeranjangProvider>(
+              builder: (context, keranjangProvider, child) {
+
+                int jumlahBarang = keranjangProvider.item.fold(
+                  0,
+                  (total, item) => total + (item['jumlah'] as int),
+                );
+
+                return Badge(
+                  isLabelVisible: jumlahBarang > 0,
+                  label: Text(
+                    '$jumlahBarang',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                    ),
+                  ),
+                  backgroundColor: Colors.red,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const KeranjangPage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade800,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.shopping_cart_outlined,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),

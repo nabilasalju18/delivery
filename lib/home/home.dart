@@ -1,4 +1,4 @@
-import 'package:delivery/profil/alamat/cabangprovider.dart';
+import 'package:delivery/profil/alamat/alamatprovider.dart';
 import 'package:delivery/home/keranjang/keranjang.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,23 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '../profil/alamat/alamat_tsamaniya.dart';
 import 'package:intl/intl.dart';
-import 'package:geolocator/geolocator.dart';
-
-class TsamaniyaModel {
-  final int? id;
-  final String? namaCabang;
-  final double? latitude;
-  final double? longitude;
-  double? distance;
-
-  TsamaniyaModel({
-    this.id,
-    this.namaCabang,
-    this.latitude,
-    this.longitude,
-    this.distance = 0.0,
-  });
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -50,11 +33,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getProduct();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      initCabang();
-    });
-
+    initCabang();
   }
 
   Future<void> getProduct() async{
@@ -78,64 +57,30 @@ class _HomePageState extends State<HomePage> {
     
     if (provider.sudahPilihCabang) return;
     
-    final cabang = await getCabangTerdekat();
-    
-    if (cabang != null) {
-      await provider.pilihCabang(
-        cabang.id!,
-        cabang.namaCabang!,
-        "",
-      );
+    try {
+      final cabang = await provider.getCabangTerdekat();
+      
+      if (cabang != null && mounted) {
+        await provider.pilihCabang(
+          cabang.id!,
+          cabang.namaCabang!,
+          cabang.alamat ?? "",
+          cabang.latitude!,
+          cabang.longitude!,
+        );
+      }
+    } catch (e) {
+      debugPrint("Gagal menginisialisasi cabang otomatis: $e");
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     }
   }
 
-  Future<Position> _getCurrentLocation() async {
-    bool serviceEnabled =
-        await Geolocator.isLocationServiceEnabled();
 
-    if (!serviceEnabled) {
-      throw Exception('GPS tidak aktif');
-    }
-
-    return await Geolocator.getCurrentPosition();
-  }
-
-  Future<List<TsamaniyaModel>> getCabang() async {
-    final response = await supabase
-        .from('lokasi_tsamaniya')
-        .select();
-
-    return response.map<TsamaniyaModel>((item) {
-      return TsamaniyaModel(
-        id: item['id'],
-        namaCabang: item['nama_cabang'],
-        latitude: (item['latitude'] as num).toDouble(),
-        longitude: (item['longitude'] as num).toDouble(),
-      );
-    }).toList();
-  }
-
-  Future<TsamaniyaModel?> getCabangTerdekat() async {
-    final cabangList = await getCabang();
-    final pos = await _getCurrentLocation();
-
-    for (final cabang in cabangList) {
-      cabang.distance = Geolocator.distanceBetween(
-        pos.latitude,
-        pos.longitude,
-        cabang.latitude!,
-        cabang.longitude!,
-      );
-    }
-
-    cabangList.sort(
-      (a, b) => a.distance!.compareTo(b.distance!),
-    );
-
-    return cabangList.isNotEmpty
-        ? cabangList.first
-        : null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -225,51 +170,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 4),
-        Consumer<KeranjangProvider>(
-          builder: (context, keranjangProvider, child) {
-
-            int jumlahBarang = keranjangProvider.item.fold(
-              0,
-              (total, item) => total + (item['jumlah'] as int),
-            );
-
-            return Badge(
-              isLabelVisible: jumlahBarang > 0,
-              label: Text(
-                '$jumlahBarang',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                ),
-              ),
-              backgroundColor: Colors.red,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const KeranjangPage(),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.shopping_cart_outlined,
-                    color: Colors.blue,
-                    size: 22,
-                  ),
-                ),
-              ),
-            );
-          },
         ),
       ],
     );
@@ -479,7 +379,7 @@ class _HomePageState extends State<HomePage> {
                                             'harga': product['harga'],
                                             'gambar': product['gambar'],
                                             'jumlah': 1,
-                                            'terpilih': false,
+                                            'terpilih': true,
                                           };
                                           keranjangProvider.tambahKeranjang(dataUntukKeranjang);
                                           ScaffoldMessenger.of(context).showSnackBar(

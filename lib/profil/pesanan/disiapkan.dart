@@ -61,7 +61,7 @@ class _DisiapkanPageState extends State<DisiapkanPage> {
             ),
           );
         }
-         final Stream<List<Map<String, dynamic>>> _ordersStream =
+         final Stream<List<Map<String, dynamic>>> ordersStream =
           Supabase.instance.client
               .from('orders')
               .stream(primaryKey: ['id'])
@@ -72,7 +72,7 @@ class _DisiapkanPageState extends State<DisiapkanPage> {
        
         return Scaffold(
           body: StreamBuilder<List<Map<String, dynamic>>>(
-            stream: _ordersStream,
+            stream: ordersStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

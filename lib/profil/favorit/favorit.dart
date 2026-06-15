@@ -7,7 +7,7 @@ import 'package:delivery/home/detail_produk.dart';
 import 'package:delivery/home/keranjang/keranjang.dart';
 
 class FavoritPage extends StatelessWidget {
-  const FavoritPage({Key? key}) : super(key: key);
+  const FavoritPage({super.key});
 
   String formatRupiah(num harga) {
     return NumberFormat.currency(
@@ -16,7 +16,7 @@ class FavoritPage extends StatelessWidget {
       decimalDigits: 0,
     ).format(harga);
   }
-  
+  //ga mau liat kamu bikin pusing tau ga
   @override
   Widget build(BuildContext context) {
     final favoritProvider = context.watch<FavoritProvider>();
